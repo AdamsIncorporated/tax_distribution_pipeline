@@ -93,21 +93,21 @@ def parse_single_page_pdf(file: BinaryIO) -> list[dict]:
             raise ValueError(f"Line {i+1} has fewer than 13 expected values: {line}")
         try:
             row = {
-                "start_date": start_date,
-                "end_date": end_date,
-                "year": int(split[0]),
-                "beginning_tax_balance": parse_number(split[1]),
-                "tax_adjustment": parse_number(split[2]),
-                "base_tax_collected": parse_number(split[3]),
-                "reversals": parse_number(split[4]),
-                "net_base_tax_collected": parse_number(split[5]),
-                "percent_collected": parse_number(split[6]),
-                "ending_tax_balance": parse_number(split[7]),
-                "property_and_insurance_collected": parse_number(split[8]),
-                "property_and_insurance_reversals": parse_number(split[9]),
-                "local_real_property_collected": parse_number(split[10]),
-                "other_penalty_collected": parse_number(split[11]),
-                "total_distributed": parse_number(split[12]),
+                "START_DATE": start_date,
+                "END_DATE": end_date,
+                "YEAR": int(split[0]),
+                "BEGINNING_TAX_BALANCE": parse_number(split[1]),
+                "TAX_ADJUSTMENT": parse_number(split[2]),
+                "BASE_TAX_COLLECTED": parse_number(split[3]),
+                "REVERSALS": parse_number(split[4]),
+                "NET_BASE_TAX_COLLECTED": parse_number(split[5]),
+                "PERCENT_COLLECTED": parse_number(split[6]),
+                "ENDING_TAX_BALANCE": parse_number(split[7]),
+                "PROPERTY_AND_INSURANCE_COLLECTED": parse_number(split[8]),
+                "PROPERTY_AND_INSURANCE_REVERSALS": parse_number(split[9]),
+                "LOCAL_REAL_PROPERTY_COLLECTED": parse_number(split[10]),
+                "OTHER_PENALTY_COLLECTED": parse_number(split[11]),
+                "TOTAL_DISTRIBUTED": parse_number(split[12]),
             }
         except ValueError as ve:
             raise ValueError(
