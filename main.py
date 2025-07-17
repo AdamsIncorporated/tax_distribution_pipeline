@@ -66,8 +66,8 @@ def parse_single_page_pdf(file: BinaryIO) -> list[dict]:
         raise ValueError("Expected two dates in the text block, but found fewer.")
 
     # Assign the start and end dates
-    start_date = datetime.strptime(dates[0], "%m/%d/%Y")
-    end_date = datetime.strptime(dates[0], "%m/%d/%Y")
+    start_date = datetime.strptime(dates[0], "%m/%d/%Y").date()
+    end_date = datetime.strptime(dates[0], "%m/%d/%Y").date()
 
     # Clean and filter the extracted section
     section = text[start:end]
