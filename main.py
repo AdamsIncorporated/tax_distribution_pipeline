@@ -105,34 +105,5 @@ def parse_single_page_pdf(file: BinaryIO) -> list[dict]:
     return rows
 
 
-st.title("📄 Travis County Tax PDF Uploader")
-
-# File uploader that accepts multiple PDFs
-uploaded_files = st.file_uploader(
-    "Upload one or more PDF files", type="pdf", accept_multiple_files=True
-)
-
-# Display uploaded filenames
-if uploaded_files:
-    st.write("Uploaded files:")
-    with st.expander("Show file list"):
-        for file in uploaded_files:
-            st.write(f"- {file.name}")
-
-    if st.button("Process and Ingest Data"):
-        data = []
-        for file in uploaded_files:
-            try:
-                rows = parse_single_page_pdf(file)
-                data.extend(rows)
-            except Exception as error:
-                st.error(f"Error processing {file.name}: {error}")
-
-        st.success(f"Processed {len(data)} row(s) from {len(uploaded_files)} file(s).")
-
-        if data:
-            df = pd.DataFrame(data)
-            st.success(f"Successfully ingested {len(df)} rows.")
-            st.dataframe(df)
-        else:
-            st.warning("No data was extracted from the uploaded files.")
+rows = parse_single_page_pdf("test_data\\2025.01.24 - 01.26   12748338.55.pdf")
+rows
