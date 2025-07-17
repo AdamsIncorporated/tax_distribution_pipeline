@@ -1,36 +1,22 @@
+import pandas as pd
 from datetime import datetime
 import streamlit as st
 import pdfplumber
 import re
+from typing import BinaryIO
 
 
-st.title("PDF Uploader")
-
-# File uploader that accepts multiple PDFs
-uploaded_files = st.file_uploader(
-    "Upload one or more PDF files", type="pdf", accept_multiple_files=True
-)
-
-# Display uploaded filenames
-if uploaded_files:
-    st.write("Uploaded files:")
-    for file in uploaded_files:
-        st.write(f"- {file.name}")
-
-
-def parse_single_page_pdf(pdf_path: str) -> list[dict]:
+def parse_single_page_pdf(file: BinaryIO) -> list[dict]:
 
     # Attempt to extract text from the first page of the PDF
     try:
-        with pdfplumber.open(pdf_path) as pdf:
+        with pdfplumber.open(file) as pdf:
             if not pdf.pages:
                 raise ValueError("The PDF has no pages.")
             page = pdf.pages[0]
             text = page.extract_text()
             if not text:
                 raise ValueError("No text could be extracted from the PDF.")
-    except FileNotFoundError:
-        raise FileNotFoundError(f"PDF file not found at path: {pdf_path}")
     except Exception as e:
         raise RuntimeError(f"Error reading PDF: {e}")
 
@@ -117,3 +103,36 @@ def parse_single_page_pdf(pdf_path: str) -> list[dict]:
         raise ValueError("No valid data rows to write to CSV.")
 
     return rows
+
+
+st.title("📄 Travis County Tax PDF Uploader")
+
+# File uploader that accepts multiple PDFs
+uploaded_files = st.file_uploader(
+    "Upload one or more PDF files", type="pdf", accept_multiple_files=True
+)
+
+# Display uploaded filenames
+if uploaded_files:
+    st.write("Uploaded files:")
+    with st.expander("Show file list"):
+        for file in uploaded_files:
+            st.write(f"- {file.name}")
+
+    if st.button("Process and Ingest Data"):
+        data = []
+        for file in uploaded_files:
+            try:
+                rows = parse_single_page_pdf(file)
+                data.extend(rows)
+            except Exception as error:
+                st.error(f"Error processing {file.name}: {error}")
+
+        st.success(f"Processed {len(data)} row(s) from {len(uploaded_files)} file(s).")
+
+        if data:
+            df = pd.DataFrame(data)
+            st.success(f"Successfully ingested {len(df)} rows.")
+            st.dataframe(df)
+        else:
+            st.warning("No data was extracted from the uploaded files.")
