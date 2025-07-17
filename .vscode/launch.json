@@ -5,14 +5,10 @@
             "name": "Debug Tax Distribution Pipeline",
             "type": "debugpy",
             "request": "launch",
-            "module": "streamlit",
+            "program": "${workspaceFolder}/main.py",
             "console": "integratedTerminal",
             "python": "${workspaceFolder}/.venv/Scripts/python.exe",
             "justMyCode": true,
-            "args": [
-                "run",
-                "${workspaceFolder}/main.py"
-            ]
         }
     ]
 }

@@ -1,9 +1,26 @@
-import pandas as pd
 from datetime import datetime
-import streamlit as st
 import pdfplumber
 import re
 from typing import BinaryIO
+
+
+def parse_number(num_str):
+    # Remove all spaces just in case
+    num_str = num_str.strip()
+    if "-" in num_str:
+        # Remove dash(es)
+        cleaned = num_str.replace("-", "")
+        try:
+            val = float(cleaned)
+            return -val
+        except ValueError:
+            # If cleaning fails, raise error with context
+            raise ValueError(
+                f"Cannot parse number from '{num_str}' after removing dash"
+            )
+    else:
+        # No dash, parse normally
+        return float(num_str)
 
 
 def parse_single_page_pdf(file: BinaryIO) -> list[dict]:
@@ -54,7 +71,7 @@ def parse_single_page_pdf(file: BinaryIO) -> list[dict]:
 
     # Clean and filter the extracted section
     section = text[start:end]
-    section = section.replace("-", "")  # Remove dashes
+    section = re.sub(r"(?<=-)-|-(?=-)", "", section)  # Remove dashes
     section = section.replace("%", "")  # Remove percent symbols
     lines = section.strip().split("\n")
     cleaned_lines = []
@@ -79,18 +96,18 @@ def parse_single_page_pdf(file: BinaryIO) -> list[dict]:
                 "start_date": start_date,
                 "end_date": end_date,
                 "year": int(split[0]),
-                "beginning_tax_balance": float(split[1]),
-                "tax_adjustment": float(split[2]),
-                "base_tax_collected": float(split[3]),
-                "reversals": float(split[4]),
-                "net_base_tax_collected": float(split[5]),
-                "percent_collected": float(split[6]),
-                "ending_tax_balance": float(split[7]),
-                "property_and_insurance_collected": float(split[8]),
-                "property_and_insurance_reversals": float(split[9]),
-                "local_real_property_collected": float(split[10]),
-                "other_penalty_collected": float(split[11]),
-                "total_distributed": float(split[12]),
+                "beginning_tax_balance": parse_number(split[1]),
+                "tax_adjustment": parse_number(split[2]),
+                "base_tax_collected": parse_number(split[3]),
+                "reversals": parse_number(split[4]),
+                "net_base_tax_collected": parse_number(split[5]),
+                "percent_collected": parse_number(split[6]),
+                "ending_tax_balance": parse_number(split[7]),
+                "property_and_insurance_collected": parse_number(split[8]),
+                "property_and_insurance_reversals": parse_number(split[9]),
+                "local_real_property_collected": parse_number(split[10]),
+                "other_penalty_collected": parse_number(split[11]),
+                "total_distributed": parse_number(split[12]),
             }
         except ValueError as ve:
             raise ValueError(
